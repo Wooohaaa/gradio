@@ -445,6 +445,19 @@ class TestLiveSchemaUpdate:
 
         assert manager._inputs[0][0].type == "password"
 
+    @pytest.mark.parametrize("text_type", ["password", "email"])
+    def test_masked_markdown_reference_does_not_warn_about_lines(self, text_type):
+        import warnings
+
+        from gradio.workflow_api import port_to_component
+
+        with warnings.catch_warnings(record=True) as caught:
+            warnings.simplefilter("always")
+            component = port_to_component("markdown", label="Note", text_type=text_type)
+        assert component.type == text_type
+        assert component.lines == 1
+        assert not [w for w in caught if "lines" in str(w.message)]
+
     def test_save_workflow_rejects_malformed_schema(self, tmp_path):
         import gradio as gr
         from gradio.route_utils import Request

@@ -744,6 +744,10 @@ def port_to_component(
         cls, kwargs = gr.Textbox, {}
     if cls is gr.Textbox and text_type != "text":
         kwargs["type"] = text_type
+        # Textbox requires lines=1 for password/email types. The markdown
+        # branch above sets lines=3, which would otherwise warn on every load.
+        if "lines" in kwargs:
+            kwargs["lines"] = 1
         if text_type == "password":
             value = None
     if value is not None:
